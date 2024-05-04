@@ -3,6 +3,10 @@
     "scheme": "acme",
     "userInterfaceStyle": "automatic",
     "orientation": "default",
+    "android": {
+      "package": "com.yourcompany.mindfulnessjournalfrontend",
+      "versionCode": 1
+    },
     "web": {
       "output": "static",
       "bundler": "metro"
@@ -11,7 +15,7 @@
       [
         "expo-router",
         {
-          "origin": "https://n"
+          "origin": "http://n"
         }
       ]
     ],
