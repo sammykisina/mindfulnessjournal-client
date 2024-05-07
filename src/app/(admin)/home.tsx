@@ -7,12 +7,15 @@ import { useAuth } from '@/context/auth-provider';
 import Button from '@/components/ui/button';
 import { deleteAllFromLocalStorage } from '@/lib/storage';
 import Label from '@/components/ui/label';
+import { router } from 'expo-router';
 
 export default function Home() {
   /**
    * === STATES ===
    */
   const { auth } = useAuth();
+
+  console.log('at home');
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -36,6 +39,7 @@ export default function Home() {
         <Button
           onPress={async () => {
             await deleteAllFromLocalStorage();
+            router.replace('/login');
           }}
           size='lg'
           variant='secondary'

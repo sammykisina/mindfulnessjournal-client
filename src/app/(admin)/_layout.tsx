@@ -18,6 +18,7 @@ export default function AdminLayout() {
           tabBarStyle: {
             backgroundColor: '#f5f5f5',
             height: 84,
+            marginTop: 2,
           },
         }}
       >

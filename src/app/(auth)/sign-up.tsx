@@ -20,6 +20,7 @@ import images from '@/constants/images';
 import { TouchableOpacity } from 'react-native';
 import useAxiosPublic from '@/hooks/shared/use-axios-public';
 import STORAGE from '@/constants/storage';
+import { useAuth } from '@/context/auth-provider';
 
 /**
  * SCHEMA
@@ -45,6 +46,7 @@ export default function Signup() {
    */
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const { axiosPublic } = useAxiosPublic();
+  const { setAuth, setIsLoggedIn } = useAuth();
 
   const {
     control,
@@ -90,7 +92,9 @@ export default function Signup() {
 
         await storeToLocalStorage(STORAGE.userAuth, response);
 
-        console.log('response?.user?.user_type', response?.user);
+        setAuth(response);
+
+        setIsLoggedIn(true);
 
         if (response?.user?.user_type === 'admin') {
           return router.push('/(admin)/home');
@@ -102,8 +106,6 @@ export default function Signup() {
       },
 
       onError: async (error: AxiosError<any, any>) => {
-        console.log('AxiosError', error);
-
         return notify('error', {
           params: {
             title: 'Opps',

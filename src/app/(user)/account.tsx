@@ -1,27 +1,24 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
 import React from 'react';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import useUsers from '@/queries/admin/use-users';
-import { User } from '@/types/shared/auth';
-import { Loading } from '@/components/partials/loading';
 import { z } from 'zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useAxiosPrivate from '@/hooks/shared/use-axios-private';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import useAxiosPublic from '@/hooks/shared/use-axios-public';
 import { notify } from 'react-native-notificated';
 import { AxiosError } from 'axios';
-import Button from '@/components/ui/button';
-import { ActivityIndicator } from '@/components/partials/activity-indicator';
-import Label from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import { Image } from 'react-native';
-import icons from '@/constants/icons';
-import images from '@/constants/images';
 import { deleteAllFromLocalStorage } from '@/lib/storage';
-import useAxiosPrivate from '@/hooks/shared/use-axios-private';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Button from '@/components/ui/button';
+import Label from '@/components/ui/label';
+import icons from '@/constants/icons';
 import { useAuth } from '@/context/auth-provider';
+import useUsers from '@/queries/admin/use-users';
+import { Loading } from '@/components/partials/loading';
+import images from '@/constants/images';
+import { Input } from '@/components/ui/input';
+import { ActivityIndicator } from '@/components/partials/activity-indicator';
 
 /**
  * SCHEMA
@@ -47,18 +44,18 @@ type AccountPayload = {
   name?: string;
 };
 
-export default function EditAccount() {
+export default function Account() {
   /**
    * === STATES ===
    */
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const queryClient = useQueryClient();
-  const { setIsLoggedIn, setAuth } = useAuth();
 
   const { axiosPrivate } = useAxiosPrivate();
   const { account } = useLocalSearchParams();
+  const { auth, setAuth, setIsLoggedIn } = useAuth();
   const { users, isFetchingUsers } = useUsers({
-    url: `/admin/users?filter[id]=${account}`,
+    url: `/admin/users?filter[id]=${auth?.user?.id}`,
   });
 
   const {
@@ -78,6 +75,8 @@ export default function EditAccount() {
    * ON VALUES SUBMIT
    */
   const onSubmit = async (values: z.infer<typeof accountSchema>) => {
+    console.log('values', values);
+
     await updateAccountMutateAsync({
       password: values?.password,
       email: values?.email,
@@ -93,9 +92,7 @@ export default function EditAccount() {
     isPending: isUpdatingAccount,
   } = useMutation({
     mutationFn: async (accountPayload: AccountPayload) => {
-      return (
-        await axiosPrivate.patch(`/admin/users/${account}`, accountPayload)
-      ).data;
+      return (await axiosPrivate.patch(``, accountPayload)).data;
     },
 
     onSuccess: async (response) => {
@@ -114,8 +111,6 @@ export default function EditAccount() {
       });
 
       queryClient.invalidateQueries({ queryKey: ['users'] });
-
-      router.push('/(settings)');
     },
 
     onError: async (error: AxiosError<any, any>) => {
@@ -147,6 +142,7 @@ export default function EditAccount() {
 
         setIsLoggedIn(false);
         setAuth(null);
+
         await deleteAllFromLocalStorage();
         router.push('/login');
       },
@@ -176,11 +172,7 @@ export default function EditAccount() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <View className='flex flex-row items-center gap-4'>
-        <Button
-          onPress={() => router.replace('(settings)')}
-          variant='ghost'
-          size='icon'
-        >
+        <Button onPress={() => router.back()} variant='ghost' size='icon'>
           <Image source={icons.back} resizeMode='contain' />
         </Button>
         <Label className='text-2xl font-intersemibold'>Account</Label>
@@ -314,23 +306,21 @@ export default function EditAccount() {
                 )}
               </Button>
 
-              {users[0]?.id === 1 && (
-                <Button
-                  onPress={() => logoutMutateAsync()}
-                  size='lg'
-                  variant='secondary'
-                  className='rounded-none border mt-4 h-[51px]'
-                >
-                  {isLoggedOut ? (
-                    <ActivityIndicator
-                      className='text-primary'
-                      title='logging out...'
-                    />
-                  ) : (
-                    <Label>Log Out</Label>
-                  )}
-                </Button>
-              )}
+              <Button
+                onPress={() => logoutMutateAsync()}
+                size='lg'
+                variant='secondary'
+                className='rounded-none border mt-4 h-[51px]'
+              >
+                {isLoggedOut ? (
+                  <ActivityIndicator
+                    className='text-primary'
+                    title='logging out...'
+                  />
+                ) : (
+                  <Label>Log Out</Label>
+                )}
+              </Button>
             </View>
           </View>
         )}

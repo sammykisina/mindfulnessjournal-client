@@ -17,7 +17,6 @@ const useUsers = ({
     queryFn: async ({ queryKey }) => {
       return (await getUsers(queryKey[1])).data;
     },
-    staleTime: 600000,
   });
 
   return {

@@ -14,13 +14,19 @@ export default function LandingPage() {
    */
   const { isLoadingAuth, isLoggedIn, auth } = useAuth();
 
+  console.log('auth', auth);
+
+  if (!auth && isLoadingAuth) {
+    return <View></View>;
+  }
+
   if (!isLoadingAuth && isLoggedIn) {
     if (auth?.user?.user_type === 'admin') {
       return <Redirect href='/(admin)/home' />;
     }
 
     if (auth?.user?.user_type === 'user') {
-      <Redirect href='/(user)/home' />;
+      return <Redirect href='/(user)/home' />;
     }
   }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Stack, Tabs } from 'expo-router';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
 export default function AdminLayout() {
@@ -15,13 +15,6 @@ export default function AdminLayout() {
 
         <Stack.Screen
           name='[activity]'
-          options={{
-            headerShown: false,
-          }}
-        />
-
-        <Stack.Screen
-          name='create-activity'
           options={{
             headerShown: false,
           }}

@@ -43,7 +43,7 @@ export default function Login() {
    */
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const { axiosPublic } = useAxiosPublic();
-  const { isLoadingAuth, isLoggedIn, auth } = useAuth();
+  const { isLoadingAuth, isLoggedIn, auth, setAuth, setIsLoggedIn } = useAuth();
 
   const {
     control,
@@ -87,6 +87,10 @@ export default function Login() {
         });
 
         await storeToLocalStorage(STORAGE.userAuth, response);
+
+        setAuth(response);
+
+        setIsLoggedIn(true);
 
         if (response?.user?.user_type === 'admin') {
           return router.push('/(admin)/home');

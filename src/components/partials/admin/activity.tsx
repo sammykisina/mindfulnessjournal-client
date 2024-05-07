@@ -1,10 +1,8 @@
 import { View, Pressable } from 'react-native';
 import React from 'react';
-import { Card } from '@/components/ui/card';
 import { Image } from 'react-native';
 import Label from '@/components/ui/label';
 import { Link } from 'expo-router';
-import {} from 'react-native';
 
 type ActivityProps = {
   id: number;
@@ -25,16 +23,20 @@ export default function Activity({ item }: { item: ActivityProps }) {
       }
       asChild
     >
-      <Pressable className='flex-1 p-1 rounded-2xl max-w-[50%]'>
-        <Image
-          source={item.thumbnail}
-          className='w-full object-cover h-[15rem]'
-          resizeMode='contain'
-        />
+      <Pressable className='flex-1 max-w-[50%] '>
+        <View className='overflow-hidden  rounded-2xl'>
+          <Image
+            source={item?.id === 0 ? item.thumbnail : { uri: item?.thumbnail }}
+            className='w-full object-cover h-[15rem]'
+            resizeMode='cover'
+          />
+        </View>
 
-        <Label className='text-lg capitalize font-intersemibold tracking-wide'>
-          {item?.title}
-        </Label>
+        <View className='px-2 py-3'>
+          <Label className='text-lg capitalize font-intersemibold tracking-wide'>
+            {item?.title}
+          </Label>
+        </View>
       </Pressable>
     </Link>
   );

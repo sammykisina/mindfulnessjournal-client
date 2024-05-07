@@ -2,34 +2,20 @@ import { View, Text, SafeAreaView, FlatList } from 'react-native';
 import React from 'react';
 import Label from '@/components/ui/label';
 import { EmptyState } from '@/components/partials/empty-state';
-import { Search } from '@/components/partials/search';
 import icons from '@/constants/icons';
 import Activity from '@/components/partials/admin/activity';
-import { remapProps } from 'nativewind';
-import images from '@/constants/images';
+import useActivities from '@/queries/admin/use-activities';
 
 export default function Mindfulness() {
   /**
    * === STATES ===
    */
-  const data = [
-    { id: 0, thumbnail: icons.add, title: 'add activity' },
-    {
-      id: 1,
-      thumbnail: images.breathing_exercise,
-      title: 'breathing exercise',
-    },
-    {
-      id: 2,
-      thumbnail: images.positive_affirmations,
-      title: 'positive affirmations',
-    },
-    {
-      id: 3,
-      thumbnail: images.yoga,
-      title: 'yoga',
-    },
-  ];
+  const { activities, isFetchingActivities } = useActivities({
+    url: `/admin/activities?sort=-created_at`,
+  });
+
+  const initialItem = { id: 0, thumbnail: icons.add, title: 'add activity' };
+  const data = [initialItem, ...(activities ?? [])];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
@@ -51,14 +37,9 @@ export default function Mindfulness() {
 
               <View className='mt-1.5 '></View>
             </View>
-
-            <Search />
           </View>
         )}
         ListEmptyComponent={() => <EmptyState title='NO ACTIVITIES FOUND' />}
-        // refreshControl={
-        //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        // }
       />
     </SafeAreaView>
   );

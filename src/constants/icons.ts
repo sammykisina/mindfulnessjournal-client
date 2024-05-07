@@ -5,6 +5,13 @@ import s from '../../assets/icons/s.png';
 import search from '../../assets/icons/search.png';
 import add from '../../assets/icons/add.png';
 import back from '../../assets/icons/back.png';
+import upload from '../../assets/icons/upload.png';
+
+import angry from '../../assets/icons/feelings/angry.png';
+import calm from '../../assets/icons/feelings/calm.png';
+import happy from '../../assets/icons/feelings/happy.png';
+import sad from '../../assets/icons/feelings/sad.png';
+import very_happy from '../../assets/icons/feelings/very_happy.png';
 
 export default {
   edit,
@@ -14,4 +21,12 @@ export default {
   search,
   add,
   back,
+  upload,
+  feelings: [
+    { name: 'angry', icon: angry },
+    { name: 'sad', icon: sad },
+    { name: 'calm', icon: calm },
+    { name: 'happy', icon: happy },
+    { name: 'very_happy', icon: very_happy },
+  ],
 };

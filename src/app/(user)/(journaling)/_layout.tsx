@@ -2,7 +2,7 @@ import React from 'react';
 import { Stack, Tabs } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-export default function AdminLayout() {
+export default function JournalingLayout() {
   return (
     <>
       <Stack>
@@ -14,14 +14,14 @@ export default function AdminLayout() {
         />
 
         <Stack.Screen
-          name='[activity]'
+          name='[journal]'
           options={{
             headerShown: false,
           }}
         />
 
         <Stack.Screen
-          name='create-activity'
+          name='create-gratitude'
           options={{
             headerShown: false,
           }}

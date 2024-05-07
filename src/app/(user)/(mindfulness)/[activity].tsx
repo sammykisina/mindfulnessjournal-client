@@ -24,7 +24,7 @@ export default function Activity() {
       <View className='flex flex-row items-center justify-between px-2'>
         <View className='flex flex-row items-center gap-4'>
           <Button
-            onPress={() => router.replace('(mindfulness)')}
+            onPress={() => router.replace('/(user)/(mindfulness)')}
             variant='ghost'
             size='icon'
           >
@@ -34,14 +34,6 @@ export default function Activity() {
             {activities?.[0]?.title}
           </Label>
         </View>
-
-        <Button
-          onPress={() => router.replace('/(mindfulness)/edit-activity')}
-          variant='ghost'
-          size='icon'
-        >
-          <Image source={icons.edit} resizeMode='contain' />
-        </Button>
       </View>
 
       {isFetchingActivities ? (
