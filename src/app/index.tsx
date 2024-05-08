@@ -14,8 +14,6 @@ export default function LandingPage() {
    */
   const { isLoadingAuth, isLoggedIn, auth } = useAuth();
 
-  console.log('auth', auth);
-
   if (!auth && isLoadingAuth) {
     return <View></View>;
   }

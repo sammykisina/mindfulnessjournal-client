@@ -6,7 +6,7 @@ import React from 'react';
 const useAxiosPrivate = () => {
   const { auth } = useAuth();
 
-  console.log('access', auth?.access_token);
+  // console.log('access', auth?.access_token);
 
   React.useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use(

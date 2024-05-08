@@ -19,8 +19,6 @@ export default function Avatar({ profile_pic }: { profile_pic: string }) {
   const queryClient = useQueryClient();
   const { auth } = useAuth();
 
-  console.log('profile_pic', profile_pic);
-
   const [avatar, setAvatar] = React.useState<{
     uri: string;
     type: string;
