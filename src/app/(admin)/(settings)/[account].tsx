@@ -22,6 +22,7 @@ import images from '@/constants/images';
 import { deleteAllFromLocalStorage } from '@/lib/storage';
 import useAxiosPrivate from '@/hooks/shared/use-axios-private';
 import { useAuth } from '@/context/auth-provider';
+import Avatar from '@/components/partials/shared/avatar';
 
 /**
  * SCHEMA
@@ -53,7 +54,7 @@ export default function EditAccount() {
    */
   const [showPassword, setShowPassword] = React.useState<boolean>(false);
   const queryClient = useQueryClient();
-  const { setIsLoggedIn, setAuth } = useAuth();
+  const { setIsLoggedIn, setAuth, auth } = useAuth();
 
   const { axiosPrivate } = useAxiosPrivate();
   const { account } = useLocalSearchParams();
@@ -94,7 +95,7 @@ export default function EditAccount() {
   } = useMutation({
     mutationFn: async (accountPayload: AccountPayload) => {
       return (
-        await axiosPrivate.patch(`/admin/users/${account}`, accountPayload)
+        await axiosPrivate.patch(`/auth/${account}/update`, accountPayload)
       ).data;
     },
 
@@ -148,7 +149,7 @@ export default function EditAccount() {
         setIsLoggedIn(false);
         setAuth(null);
         await deleteAllFromLocalStorage();
-        router.push('/login');
+        router.push('/');
       },
 
       onError: async (error: AxiosError<any, any>) => {
@@ -192,11 +193,7 @@ export default function EditAccount() {
         ) : (
           <View className='flex flex-col justify-center px-4 h-full flex-1'>
             <View className='flex justify-center items-center'>
-              <Image
-                className='h-[10rem]'
-                source={images.avatar}
-                resizeMode='contain'
-              />
+              <Avatar profile_pic={users?.[0]?.profile_pic} />
             </View>
 
             <View className='flex flex-col gap-2'>
@@ -314,7 +311,7 @@ export default function EditAccount() {
                 )}
               </Button>
 
-              {users[0]?.id === 1 && (
+              {auth?.user?.id === users[0]?.id && (
                 <Button
                   onPress={() => logoutMutateAsync()}
                   size='lg'

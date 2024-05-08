@@ -125,6 +125,7 @@ export default function Journaling() {
       });
 
       queryClient.invalidateQueries({ queryKey: ['today-journal'] });
+      queryClient.invalidateQueries({ queryKey: ['weekly-mood'] });
 
       reset({
         feeling: '',

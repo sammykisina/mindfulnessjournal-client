@@ -189,7 +189,7 @@ export default function Login() {
 
             <View>
               <Link
-                href={'/'}
+                href={'/request-password-reset-code'}
                 className={cn(buttonVariants({ variant: 'link' }))}
               >
                 Forgot Password?

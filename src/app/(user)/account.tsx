@@ -19,6 +19,7 @@ import { Loading } from '@/components/partials/loading';
 import images from '@/constants/images';
 import { Input } from '@/components/ui/input';
 import { ActivityIndicator } from '@/components/partials/activity-indicator';
+import Avatar from '@/components/partials/shared/avatar';
 
 /**
  * SCHEMA
@@ -52,7 +53,6 @@ export default function Account() {
   const queryClient = useQueryClient();
 
   const { axiosPrivate } = useAxiosPrivate();
-  const { account } = useLocalSearchParams();
   const { auth, setAuth, setIsLoggedIn } = useAuth();
   const { users, isFetchingUsers } = useUsers({
     url: `/admin/users?filter[id]=${auth?.user?.id}`,
@@ -75,8 +75,6 @@ export default function Account() {
    * ON VALUES SUBMIT
    */
   const onSubmit = async (values: z.infer<typeof accountSchema>) => {
-    console.log('values', values);
-
     await updateAccountMutateAsync({
       password: values?.password,
       email: values?.email,
@@ -92,7 +90,12 @@ export default function Account() {
     isPending: isUpdatingAccount,
   } = useMutation({
     mutationFn: async (accountPayload: AccountPayload) => {
-      return (await axiosPrivate.patch(``, accountPayload)).data;
+      return (
+        await axiosPrivate.patch(
+          `/auth/${auth?.user?.id}/update`,
+          accountPayload
+        )
+      ).data;
     },
 
     onSuccess: async (response) => {
@@ -101,13 +104,6 @@ export default function Account() {
           title: '',
           description: response.message,
         },
-      });
-
-      reset({
-        confirm: '',
-        email: '',
-        name: '',
-        password: '',
       });
 
       queryClient.invalidateQueries({ queryKey: ['users'] });
@@ -142,9 +138,8 @@ export default function Account() {
 
         setIsLoggedIn(false);
         setAuth(null);
-
         await deleteAllFromLocalStorage();
-        router.push('/login');
+        router.push('/');
       },
 
       onError: async (error: AxiosError<any, any>) => {
@@ -172,7 +167,7 @@ export default function Account() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <View className='flex flex-row items-center gap-4'>
-        <Button onPress={() => router.back()} variant='ghost' size='icon'>
+        <Button onPress={() => router.replace('/')} variant='ghost' size='icon'>
           <Image source={icons.back} resizeMode='contain' />
         </Button>
         <Label className='text-2xl font-intersemibold'>Account</Label>
@@ -184,11 +179,7 @@ export default function Account() {
         ) : (
           <View className='flex flex-col justify-center px-4 h-full flex-1'>
             <View className='flex justify-center items-center'>
-              <Image
-                className='h-[10rem]'
-                source={images.avatar}
-                resizeMode='contain'
-              />
+              <Avatar profile_pic={users?.[0]?.profile_pic} />
             </View>
 
             <View className='flex flex-col gap-2'>

@@ -9,4 +9,6 @@ export type User = {
   email: string;
   name: string;
   user_type: 'admin' | 'user';
+  profile_pic: string;
+  is_super_admin: boolean;
 };

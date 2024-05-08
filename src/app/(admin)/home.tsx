@@ -4,16 +4,17 @@ import { SafeAreaView } from 'react-native';
 import images from '@/constants/images';
 import { Card, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/context/auth-provider';
-import Button from '@/components/ui/button';
-import { deleteAllFromLocalStorage } from '@/lib/storage';
-import Label from '@/components/ui/label';
-import { router } from 'expo-router';
+import Avatar from '@/components/partials/shared/avatar';
+import useUsers from '@/queries/admin/use-users';
 
 export default function Home() {
   /**
    * === STATES ===
    */
   const { auth } = useAuth();
+  const { users } = useUsers({
+    url: `/admin/users?filter[id]=${auth?.user?.id}`,
+  });
 
   console.log('at home');
 
@@ -27,26 +28,10 @@ export default function Home() {
         />
 
         <Card className=' bg-gray-200 h-[20rem] shadow-sm rounded-xl w-full items-center flex justify-center gap-3'>
-          <Image
-            className='h-[10rem]'
-            source={images.avatar}
-            resizeMode='contain'
-          />
+          <Avatar profile_pic={users?.[0]?.profile_pic} />
 
           <CardTitle>Hello, {auth?.user?.name}</CardTitle>
         </Card>
-
-        <Button
-          onPress={async () => {
-            await deleteAllFromLocalStorage();
-            router.replace('/login');
-          }}
-          size='lg'
-          variant='secondary'
-          className='rounded-none border mt-4 h-[51px]'
-        >
-          <Label>CLEAR STORAGE</Label>
-        </Button>
       </View>
     </SafeAreaView>
   );

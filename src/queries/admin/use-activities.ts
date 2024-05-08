@@ -4,20 +4,22 @@ import { useQuery } from '@tanstack/react-query';
 
 const useActivities = ({
   q,
+  url,
 }: {
   q?: number | string;
+  url?: number | string;
 } = {}) => {
   const { axiosPrivate } = useAxiosPrivate();
 
-  const getActivities = async (q?: string | number) =>
+  const getActivities = async (q?: string | number, url?: string) =>
     await axiosPrivate.get(
-      `/admin/activities?${q ? `filter[title]=${q}` : ''}`
+      url ? url : `/admin/activities?${q ? `filter[title]=${q}` : ''}`
     );
 
   const { data, isLoading: isFetchingActivities } = useQuery({
-    queryKey: ['activities', q],
+    queryKey: ['activities', q, url],
     queryFn: async ({ queryKey }) => {
-      return (await getActivities(queryKey[1])).data;
+      return (await getActivities(queryKey[1], queryKey[2] as string)).data;
     },
   });
 

@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native';
 import React from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -16,6 +15,20 @@ export default function AuthLayout() {
 
         <Stack.Screen
           name='sign-up'
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name='request-password-reset-code'
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name='reset-password'
           options={{
             headerShown: false,
           }}

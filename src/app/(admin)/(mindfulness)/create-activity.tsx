@@ -120,24 +120,6 @@ export default function CreateActivity() {
   });
 
   /**
-   * RICH EDITOR IMAGE SELECTOR
-   */
-  // const openGalleryClickProfile = async () => {
-  //   let result = await ImagePicker.launchImageLibraryAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //     base64: true,
-  //   });
-
-  //   if (!result.canceled) {
-  //     const str = `data:${result?.assets[0]?.mimeType};base64,${result?.assets[0]?.base64}`;
-  //     richTextRef?.current?.insertImage(str);
-  //   }
-  // };
-
-  /**
    * THUMBNAIL IMAGE SELECTOR
    */
   const thumbnailImageSelector = async () => {
