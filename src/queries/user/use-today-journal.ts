@@ -13,6 +13,7 @@ const useTodayJournal = () => {
     queryFn: async () => {
       return (await getTodayJournal()).data;
     },
+    retry: true,
   });
 
   return {

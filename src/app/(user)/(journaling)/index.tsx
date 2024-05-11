@@ -23,6 +23,7 @@ import useAxiosPrivate from '@/hooks/shared/use-axios-private';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Journal } from '@/types/journal';
 
 /**
  * SCHEMA
@@ -49,8 +50,11 @@ export default function Journaling() {
 
   const { axiosPrivate } = useAxiosPrivate();
   const queryClient = useQueryClient();
+  const [todayJournalOrg, setTodayJournalOrg] = React.useState<Journal>();
 
   const { isFetchingTodayJournal, todayJournal } = useTodayJournal();
+
+  console.log({ isFetchingTodayJournal, todayJournal });
 
   const {
     control,
@@ -144,6 +148,12 @@ export default function Journaling() {
     },
   });
 
+  React.useEffect(() => {
+    if (todayJournal) {
+      setTodayJournalOrg(todayJournal);
+    }
+  }, [todayJournal]);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <View className='flex flex-row items-center gap-4 px-2'>
@@ -236,8 +246,8 @@ export default function Journaling() {
           <View className='flex justify-center items-center mt-6'>
             {isFetchingTodayJournal ? (
               <Loading title='' />
-            ) : todayJournal ? (
-              <Link asChild href={`(journaling)/${todayJournal?.id}`}>
+            ) : todayJournalOrg ? (
+              <Link asChild href={`(journaling)/${todayJournalOrg?.id}`}>
                 <Pressable>
                   <Card className='bg-gray-100 w-full'>
                     <CardHeader className='items-center'>
@@ -246,7 +256,7 @@ export default function Journaling() {
 
                     <CardContent className='w-full'>
                       <Label className='first-letter:uppercase text-lg tracking-wide'>
-                        {todayJournal?.feeling}
+                        {todayJournalOrg?.feeling}
                       </Label>
                     </CardContent>
                   </Card>
