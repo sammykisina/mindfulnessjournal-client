@@ -26,6 +26,20 @@ export default function AdminLayout() {
             headerShown: false,
           }}
         />
+
+        <Stack.Screen
+          name='edit-activity'
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name='upload-activity-assets'
+          options={{
+            headerShown: false,
+          }}
+        />
       </Stack>
 
       <StatusBar backgroundColor='#fff' style='dark' />

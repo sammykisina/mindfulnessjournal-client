@@ -6,6 +6,7 @@ import search from '../../assets/icons/search.png';
 import add from '../../assets/icons/add.png';
 import back from '../../assets/icons/back.png';
 import upload from '../../assets/icons/upload.png';
+import deleteIcon from '../../assets/icons/delete.png';
 
 import angry from '../../assets/icons/feelings/angry.png';
 import calm from '../../assets/icons/feelings/calm.png';
@@ -22,6 +23,7 @@ export default {
   add,
   back,
   upload,
+  deleteIcon,
   feelings: [
     { name: 'angry', icon: angry },
     { name: 'sad', icon: sad },

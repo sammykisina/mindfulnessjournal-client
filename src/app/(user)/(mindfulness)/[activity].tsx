@@ -1,4 +1,4 @@
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -16,7 +16,7 @@ export default function Activity() {
   const { activity } = useLocalSearchParams();
 
   const { activities, isFetchingActivities } = useActivities({
-    url: `/admin/activities?filter[id]=${activity}`,
+    url: `/admin/activities?filter[id]=${activity}&include=assets`,
   });
 
   return (
@@ -39,7 +39,7 @@ export default function Activity() {
       {isFetchingActivities ? (
         <Loading title='fetching activity data' />
       ) : (
-        <View className='mt-5 px-2 flex flex-col gap-3'>
+        <ScrollView className='mt-5 px-2 flex flex-col gap-3'>
           <Image
             className='h-[15rem]'
             source={{ uri: activities?.[0]?.thumbnail }}
@@ -49,7 +49,25 @@ export default function Activity() {
           <Label className=' w-full rounded-md border border-input bg-gray-100 px-3 py-2 text-lg'>
             {activities?.[0]?.content}
           </Label>
-        </View>
+
+          <View className='flex flex-col gap-4 pb-3 '>
+            <Label className='text-2xl font-intersemibold tracking-wider'>
+              Assets
+            </Label>
+
+            <View className='flex flex-col gap-2'>
+              {activities?.[0]?.assets?.map((asset, index) => (
+                <View className='w-full' key={index}>
+                  <Image
+                    className='h-[15rem]'
+                    source={{ uri: asset?.asset }}
+                    resizeMode='cover'
+                  />
+                </View>
+              ))}
+            </View>
+          </View>
+        </ScrollView>
       )}
     </SafeAreaView>
   );

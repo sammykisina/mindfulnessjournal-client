@@ -1,19 +1,24 @@
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import React from 'react';
-import { router } from 'expo-router';
-import Label from '@/components/ui/label';
-import Button from '@/components/ui/button';
-import icons from '@/constants/icons';
 import { z } from 'zod';
+import useAxiosPrivate from '@/hooks/shared/use-axios-private';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { router, useLocalSearchParams } from 'expo-router';
+import useActivities from '@/queries/admin/use-activities';
+import { useRecoilState } from 'recoil';
+import ActivityAtoms from '@/atoms/actitivity';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Button from '@/components/ui/button';
+import { Image } from 'react-native';
+import Label from '@/components/ui/label';
+import icons from '@/constants/icons';
 import { AxiosError } from 'axios';
-import { notify } from 'react-native-notificated';
-import { Input } from '@/components/ui/input';
 import * as ImagePicker from 'expo-image-picker';
-import useAxiosPrivate from '@/hooks/shared/use-axios-private';
+import { Input } from '@/components/ui/input';
 import { ActivityIndicator } from '@/components/partials/activity-indicator';
+import { notify } from 'react-native-notificated';
 
 /**
  * SCHEMA
@@ -23,17 +28,17 @@ export const activitySchema = z.object({
   content: z.string(),
 });
 
-export default function CreateActivity() {
+export default function EditActivity() {
   /**
    * === STATES ===
    */
+
+  const [globalActivity, setGlobalActivity] = useRecoilState(
+    ActivityAtoms.globalActivityState
+  );
+
   const { axiosPrivate } = useAxiosPrivate();
   const queryClient = useQueryClient();
-
-  const [thumbnail, setThumbnail] = React.useState<{
-    uri: string;
-    type: string;
-  }>();
 
   const {
     control,
@@ -49,39 +54,41 @@ export default function CreateActivity() {
    */
 
   /**
+   * RESET FORM INPUTS
+   */
+  React.useEffect(() => {
+    if (globalActivity) {
+      reset({
+        title: globalActivity?.title,
+        content: globalActivity?.content,
+      });
+    }
+  }, [globalActivity]);
+
+  /**
    * ON VALUES SUBMIT
    */
   const onSubmit = async (values: z.infer<typeof activitySchema>) => {
-    const formData = new FormData();
-    formData.append('content', values?.content);
-    formData.append('title', values?.title);
-
-    formData.append('thumbnail', {
-      type: thumbnail?.type,
-      uri: thumbnail?.uri,
-      name: 'thumbnail,' + thumbnail?.type,
-    } as any);
-
-    await createActivityMutateAsync(formData);
+    await updateActivityMutateAsync(values);
   };
 
   /**
-   * CREATE ACTIVITY
+   * UPDATE ACTIVITY
    */
   const {
-    mutateAsync: createActivityMutateAsync,
-    isPending: isCreatingActivity,
+    mutateAsync: updateActivityMutateAsync,
+    isPending: isUpdatingActivity,
   } = useMutation({
-    mutationFn: async (activityPayload: FormData) => {
-      return await axiosPrivate({
-        method: 'POST',
-        url: '/admin/activities',
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Accept: 'application/json',
-        },
-        data: activityPayload,
-      });
+    mutationFn: async (activityPayload: {
+      title?: string;
+      content?: string;
+    }) => {
+      return (
+        await axiosPrivate.patch(
+          `/admin/activities/${globalActivity?.id}`,
+          activityPayload
+        )
+      ).data;
     },
 
     onSuccess: async (response) => {
@@ -95,21 +102,15 @@ export default function CreateActivity() {
       queryClient.invalidateQueries({ queryKey: ['activities'] });
 
       reset({
-        content: '',
         title: '',
+        content: '',
       });
 
-      setThumbnail({
-        type: '',
-        uri: '',
-      });
-
-      router.replace('/(mindfulness)');
+      setGlobalActivity(null);
+      router.replace(`(mindfulness)/${globalActivity.id}`);
     },
 
     onError: async (error: AxiosError<any, any>) => {
-      console.log('error here', error);
-
       return notify('error', {
         params: {
           title: 'Opps',
@@ -119,39 +120,24 @@ export default function CreateActivity() {
     },
   });
 
-  /**
-   * THUMBNAIL IMAGE SELECTOR
-   */
-  const thumbnailImageSelector = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setThumbnail({
-        type: result?.assets[0]?.mimeType as string,
-        uri: result?.assets[0]?.uri as string,
-      });
-    }
-  };
-
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <View className='flex flex-row items-center gap-4'>
         <Button
-          onPress={() => router.replace('(mindfulness)')}
+          onPress={() => {
+            setGlobalActivity(null);
+            router.replace(`(mindfulness)/${globalActivity.id}`);
+          }}
           variant='ghost'
           size='icon'
         >
           <Image source={icons.back} resizeMode='contain' />
         </Button>
-        <Label className='text-2xl font-intersemibold'>Add Activity</Label>
+
+        <Label className='text-2xl font-intersemibold'>Edit Activity</Label>
       </View>
 
-      <ScrollView className='mt-5 px-2 pb-12'>
+      <ScrollView className='mt-5 px-2  pb-12'>
         <View>
           <View className='flex flex-col gap-2'>
             <View className='flex flex-col gap-2'>
@@ -169,27 +155,6 @@ export default function CreateActivity() {
                 <Label className='text-sm font-medium text-destructive'>
                   {errors?.title?.message}
                 </Label>
-              )}
-            </View>
-
-            <View className='flex flex-col gap-2'>
-              <Label className='text-lg'>Thumbnail</Label>
-
-              <Button
-                onPress={() => thumbnailImageSelector()}
-                variant='default'
-                size='default'
-                className='h-[6rem]'
-              >
-                <Label className='text-primary-foreground'>Upload</Label>
-              </Button>
-
-              {thumbnail?.uri && (
-                <Image
-                  source={{ uri: thumbnail.uri }}
-                  style={{ width: '100%', height: 200 }}
-                  resizeMode='cover'
-                />
               )}
             </View>
 
@@ -219,17 +184,17 @@ export default function CreateActivity() {
             variant='default'
             className='rounded-full mt-3 h-[51px]'
           >
-            {isCreatingActivity ? (
+            {isUpdatingActivity ? (
               <ActivityIndicator
                 className='text-primary-foreground'
-                title='creating...'
+                title='updating...'
               />
             ) : (
-              <Text className='text-primary-foreground'>Create Activity</Text>
+              <Text className='text-primary-foreground'>Update Activity</Text>
             )}
           </Button>
         </View>
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }

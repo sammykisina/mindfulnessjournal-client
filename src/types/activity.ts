@@ -3,4 +3,5 @@ export type Activity = {
   thumbnail: string;
   title: string;
   content: string;
+  assets: { id: number; asset: string }[];
 };
