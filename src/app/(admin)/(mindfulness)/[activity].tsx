@@ -96,6 +96,38 @@ export default function Activity() {
     );
   };
 
+  /**
+   * DELETE ACTIVITY
+   */
+  const { mutateAsync: deleteActivity, isPending: isDeletingActivity } =
+    useMutation({
+      mutationFn: async (activity_id: number) => {
+        return (await axiosPrivate.delete(`/admin/activities/${activity_id}`))
+          .data;
+      },
+
+      onSuccess: async (response) => {
+        notify('success', {
+          params: {
+            title: 'WOW',
+            description: response?.data?.message,
+          },
+        });
+
+        queryClient.invalidateQueries({ queryKey: ['activities'] });
+        router.replace('(mindfulness)');
+      },
+
+      onError: async (error: AxiosError<any, any>) => {
+        return notify('error', {
+          params: {
+            title: 'Opps',
+            description: error.response?.data?.message,
+          },
+        });
+      },
+    });
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <View className='flex flex-row items-center justify-between px-2'>
@@ -137,6 +169,22 @@ export default function Activity() {
               source={icons.upload}
               resizeMode='contain'
             />
+          </Button>
+
+          <Button
+            onPress={async () => {
+              console.log(activities?.[0]?.id);
+
+              await deleteActivity(activities?.[0]?.id);
+            }}
+            variant='outline'
+            size='icon'
+          >
+            {isDeletingActivity ? (
+              <ActivityIndicator title='' />
+            ) : (
+              <Label>Delete</Label>
+            )}
           </Button>
         </View>
       </View>
